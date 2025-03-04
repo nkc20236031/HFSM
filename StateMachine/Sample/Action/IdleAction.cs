@@ -7,17 +7,16 @@ namespace RizeLibrary.StateMachine
 	{
 		private readonly Parameter<Parameters> _parameter;
 		private readonly string _idleTextColor;
-		private readonly Color _idleColor;
 		private readonly Image _idleImage;
 		
 		public IdleAction(IdleStatus idleStatus)
 		{
 			_parameter = idleStatus.Parameter;
 			_idleTextColor = idleStatus.TextColor;
-			_idleColor = idleStatus.Color;
 			_idleImage = idleStatus.Image;
 			
-			_idleImage.color = _idleColor;
+			Color idleColor = idleStatus.Color;
+			_idleImage.color = idleColor;
 		}
 		
 		public override void OnEnter()

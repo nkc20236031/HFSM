@@ -6,16 +6,15 @@ namespace RizeLibrary.StateMachine
 	public class DeadAction : BaseAction
 	{
 		private readonly string _deadTextColor;
-		private readonly Color _deadColor;
 		private readonly Image _deadImage;
 		
 		public DeadAction(DeadStatus deadStatus)
 		{
 			_deadTextColor = deadStatus.TextColor;
-			_deadColor = deadStatus.Color;
 			_deadImage = deadStatus.Image;
 			
-			_deadImage.color = _deadColor;
+			Color deadColor = deadStatus.Color;
+			_deadImage.color = deadColor;
 		}
 		
 		public override void OnEnter()

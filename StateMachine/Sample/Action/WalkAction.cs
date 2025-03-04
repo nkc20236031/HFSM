@@ -6,7 +6,6 @@ namespace RizeLibrary.StateMachine
 	public class WalkAction : BaseAction
 	{
 		private readonly string _walkTextColor;
-		private readonly Color _walkColor;
 		private readonly Image _walkImage;
 		private readonly Parameter<Parameters> _parameter;
 		
@@ -14,10 +13,10 @@ namespace RizeLibrary.StateMachine
 		{
 			_parameter = walkStatus.Parameter;
 			_walkTextColor = walkStatus.TextColor;
-			_walkColor = walkStatus.Color;
 			_walkImage = walkStatus.Image;
 			
-			_walkImage.color = _walkColor;
+			Color walkColor = walkStatus.Color;
+			_walkImage.color = walkColor;
 		}
 
 		public override void OnEnter()

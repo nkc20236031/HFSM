@@ -92,7 +92,7 @@ namespace RizeLibrary.StateMachine
 			walkToIdle.AddCondition(isIdle, true);
 			idleToWalk.AddCondition(isIdle, false);
 			
-			// 条件クラス式
+			// 派生クラス式
 			var isDead0 = new ConditionIsDead();
 			moveToDead.AddCondition(isDead0, true);
 			

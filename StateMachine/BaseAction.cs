@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RizeLibrary.StateMachine
+﻿namespace RizeLibrary.StateMachine
 {
 	public abstract class BaseAction
 	{

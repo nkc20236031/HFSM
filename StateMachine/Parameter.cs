@@ -7,7 +7,7 @@ namespace RizeLibrary.StateMachine
 		private readonly Dictionary<T, object> _parameters = new();
 
 		/// <summary>
-		/// パラメータの設定
+		/// パラメータの追加
 		/// </summary>
 		/// <param name="key">キー</param>
 		/// <param name="value">初期値</param>
