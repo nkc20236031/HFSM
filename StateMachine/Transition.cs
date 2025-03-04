@@ -2,22 +2,32 @@
 {
 	public class Transition<TStateID>
 	{
+		private ICondition _conditions;
+		private bool _conditionMet;
+		
 		public TStateID FromStateID { get; }
 		public TStateID ToStateID { get; }
-		public Decision Decision { get; }
-		public bool ConditionMet { get; }
 
-		public Transition(TStateID fromStateID, TStateID toStateID, Decision decision, bool conditionMet)
+		public Transition(TStateID fromStateID, TStateID toStateID)
 		{
 			FromStateID = fromStateID;
 			ToStateID = toStateID;
-			Decision = decision;
-			ConditionMet = conditionMet;
+		}
+		
+		/// <summary>
+		/// 条件の追加
+		/// </summary>
+		/// <param name="condition">条件</param>
+		/// <param name="conditionMet">条件を満たすか</param>
+		public void AddCondition(ICondition condition, bool conditionMet)
+		{
+			_conditions = condition;
+			_conditionMet = conditionMet;
 		}
 		
 		public bool IsTriggered()
 		{
-			return Decision.Decide() == ConditionMet;
+			return _conditions.Decide() == _conditionMet;
 		}
 	}
 }

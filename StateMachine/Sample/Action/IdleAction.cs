@@ -5,12 +5,14 @@ namespace RizeLibrary.StateMachine
 {
 	public class IdleAction : BaseAction
 	{
+		private readonly Parameter<Parameters> _parameter;
 		private readonly string _idleTextColor;
 		private readonly Color _idleColor;
 		private readonly Image _idleImage;
 		
 		public IdleAction(IdleStatus idleStatus)
 		{
+			_parameter = idleStatus.Parameter;
 			_idleTextColor = idleStatus.TextColor;
 			_idleColor = idleStatus.Color;
 			_idleImage = idleStatus.Image;
@@ -24,7 +26,17 @@ namespace RizeLibrary.StateMachine
 			
 			_idleImage.gameObject.SetActive(true);
 		}
-		
+
+		public override void OnUpdate()
+		{
+			float x = Input.GetAxis("Horizontal");
+			float y = Input.GetAxis("Vertical");
+			Vector2 movement = new Vector2(x, y);
+			_parameter.Set(Parameters.Move, movement.magnitude);
+			
+			// _parameter.Set(Parameters.IsDead, Input.GetKeyDown(KeyCode.Space));
+		}
+
 		public override void OnExit()
 		{
 			_idleImage.gameObject.SetActive(false);

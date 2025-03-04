@@ -8,9 +8,11 @@ namespace RizeLibrary.StateMachine
 		private readonly string _walkTextColor;
 		private readonly Color _walkColor;
 		private readonly Image _walkImage;
+		private readonly Parameter<Parameters> _parameter;
 		
 		public WalkAction(WalkStatus walkStatus)
 		{
+			_parameter = walkStatus.Parameter;
 			_walkTextColor = walkStatus.TextColor;
 			_walkColor = walkStatus.Color;
 			_walkImage = walkStatus.Image;
@@ -24,7 +26,17 @@ namespace RizeLibrary.StateMachine
 			
 			_walkImage.gameObject.SetActive(true);
 		}
-		
+
+		public override void OnUpdate()
+		{
+			float x = Input.GetAxis("Horizontal");
+			float y = Input.GetAxis("Vertical");
+			Vector2 movement = new Vector2(x, y);
+			_parameter.Set(Parameters.Move, movement.magnitude);
+			
+			// _parameter.Set(Parameters.IsDead, Input.GetKeyDown(KeyCode.Space));
+		}
+
 		public override void OnExit()
 		{
 			_walkImage.gameObject.SetActive(false);

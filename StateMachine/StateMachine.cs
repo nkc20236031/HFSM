@@ -42,7 +42,7 @@ namespace RizeLibrary.StateMachine
         /// 状態の変更
         /// </summary>
         /// <param name="stateID">状態のID</param>
-        public void ChangeState(TStateID stateID)
+        private void ChangeState(TStateID stateID)
         {
             if (_currentState == _states[stateID]) { return; }
 
@@ -56,11 +56,12 @@ namespace RizeLibrary.StateMachine
         /// </summary>
         /// <param name="fromStateID">遷移元の状態のID</param>
         /// <param name="toStateID">遷移先の状態のID</param>
-        /// <param name="decision">条件</param>
-        /// <param name="conditionMet">条件が成立しているか</param>
-        public void AddTransition(TStateID fromStateID, TStateID toStateID, Decision decision, bool conditionMet)
+        /// <param name="conditions">条件</param>
+        public Transition<TStateID> AddTransition(TStateID fromStateID, TStateID toStateID)
         {
-            _transitions.Add(new Transition<TStateID>(fromStateID, toStateID, decision, conditionMet));
+            var transition = new Transition<TStateID>(fromStateID, toStateID);
+            _transitions.Add(transition);
+            return transition;
         }
 
         public override void OnEnter()
@@ -93,11 +94,6 @@ namespace RizeLibrary.StateMachine
         private void UpdateAnyTransitions()
         {
             _anyTransitions = _transitions.Where(transition => _currentState == _states[transition.FromStateID]).ToList();
-        }
-
-        public override void OnDraw()
-        {
-            _currentState?.OnDraw();
         }
     }
 }

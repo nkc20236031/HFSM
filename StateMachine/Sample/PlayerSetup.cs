@@ -26,6 +26,12 @@ namespace RizeLibrary.StateMachine
 		Idle,
 		Walk
 	}
+	
+	public enum Parameters
+	{
+		Move,		// float
+		IsDead		// bool
+	}
 
 	public class PlayerSetup : MonoBehaviour
 	{
@@ -45,8 +51,11 @@ namespace RizeLibrary.StateMachine
 			_stateMachine = new StateMachine<PlayerState>();		// 親ステートマシン
 			_moveStateMachine = new StateMachine<MoveState>();		// 子ステートマシン
 			
+			// パラメータの生成
+			var parameter = new Parameter<Parameters>();
+			
 			// コンポーネントの生成
-			var playerComponent = new PlayerComponent(_idleImage, _walkImage, _deadImage);
+			var playerComponent = new PlayerComponent(parameter, _idleImage, _walkImage, _deadImage);
 			
 			// ステータスの生成
 			var idleStatus = new IdleStatus(playerComponent, _playerStatus);
@@ -66,16 +75,34 @@ namespace RizeLibrary.StateMachine
 			_moveStateMachine.AddState(MoveState.Idle, idleAction);			// Idleステートを追加
 			_moveStateMachine.AddState(MoveState.Walk, walkAction);			// Walkステートを追加
 			
-			// 状態遷移の条件を設定
-			/* Walk -> Idle: 入力がない
-			   Idle -> Walk: 入力がある */
-			var isIdle = new Decision(() => Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0);
-			_moveStateMachine.AddTransition(MoveState.Walk, MoveState.Idle, isIdle, true);
-			_moveStateMachine.AddTransition(MoveState.Idle, MoveState.Walk, isIdle, false);
+			// パラメータの設定
+			parameter.Add<float>(Parameters.Move, 0f);
+			parameter.Add<bool>(Parameters.IsDead, false);
 			
-			/* Move -> Dead: スペースキーが押された */
-			var isDead = new Decision(() => Input.GetKeyDown(KeyCode.Space));
-			_stateMachine.AddTransition(PlayerState.Move, PlayerState.Dead, isDead, true);
+			// 状態遷移の追加
+			// Walk -> Idle: [W,A,S,D]入力がない
+			Transition<MoveState> walkToIdle = _moveStateMachine.AddTransition(MoveState.Walk, MoveState.Idle);
+			// Idle -> Walk: [W,A,S,D]入力がある
+			Transition<MoveState> idleToWalk = _moveStateMachine.AddTransition(MoveState.Idle, MoveState.Walk);
+			// Move -> Dead: [Space]が押された
+			Transition<PlayerState> moveToDead = _stateMachine.AddTransition(PlayerState.Move, PlayerState.Dead);
+			
+			// 状態遷移の条件を設定
+			var isIdle = new Condition(() => parameter.Get<float>(Parameters.Move) == 0f);
+			walkToIdle.AddCondition(isIdle, true);
+			idleToWalk.AddCondition(isIdle, false);
+			
+			// 条件クラス式
+			var isDead0 = new ConditionIsDead();
+			moveToDead.AddCondition(isDead0, true);
+			
+			// ラムダ式
+			// var isDead1 = new Condition(() => Input.GetKeyDown(KeyCode.Space));
+			// moveToDead.AddCondition(isDead1, true);
+			
+			// パラメータ式
+			// var isDead2 = new Condition(() => parameter.Get<bool>(Parameters.IsDead));
+			// moveToDead.AddCondition(isDead2, true);
 			
 			// 初期状態の設定
 			_moveStateMachine.SetInitState(MoveState.Idle);
