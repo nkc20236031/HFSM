@@ -79,23 +79,23 @@ stateMachine.SetInitState("A-State");
 ```cs
 private void Start()
 {
-    stateMachine.Init();
+	stateMachine.Init();
 }
 
 private void FixedUpdate()
 {
-    stateMachine.OnFixedUpdate();
+	stateMachine.OnFixedUpdate();
 }
 
 private void Update()
 {
-    stateMachine.OnUpdate();
+	stateMachine.OnUpdate();
 }
 
 private void OnDrawGizmos()
 {
-    // ?(null条件演算子)の追加必須
-    stateMachine?.OnDrawDebug();
+	// ?(null条件演算子)の追加必須
+	stateMachine?.OnDrawDebug();
 }
 ```
 
@@ -104,8 +104,8 @@ private void OnDrawGizmos()
 ```cs
 public enum State
 {
-    AState,
-    BState
+	AState,
+	BState
 }
 
 private StateMachine<State> stateMachine;
