@@ -1,7 +1,7 @@
 # HFSM
 Unityで使用できる簡易階層型ステートマシン
 
-# 使用方法
+# 基本的な使い方
 ## 1. ステートマシンを作成
 ```cs
 private StateMachine<string> stateMachine;
