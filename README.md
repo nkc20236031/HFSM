@@ -110,3 +110,8 @@ public enum State
 
 private StateMachine<State> stateMachine;
 ```
+
+どの状態からでも遷移可能にする
+```cs
+stateMachine.AddAnyTransition(State.BState);
+```
