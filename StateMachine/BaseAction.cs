@@ -1,4 +1,4 @@
-﻿namespace RizeLibrary.StateMachine
+namespace RizeLibrary.StateMachine
 {
 	public abstract class BaseAction
 	{
@@ -26,5 +26,10 @@
 		/// デバッグ描画を行う。
 		/// </summary>
 		public virtual void OnDrawDebug() { }
+
+		/// <summary>
+		/// オブジェクトが破棄されるときに呼び出される。
+		/// </summary>
+		public virtual void OnDestroy() { }
 	}
 }
