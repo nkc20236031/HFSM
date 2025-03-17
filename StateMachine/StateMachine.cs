@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -24,7 +24,6 @@ namespace RizeLibrary.StateMachine
             {
                 // エラーログを出力
                 Debug.LogError($"状態{stateID}は既に存在します。");
-                // Debug.LogError($"State {stateID} already exists.");
             }
             else
             {
@@ -50,7 +49,6 @@ namespace RizeLibrary.StateMachine
             {
                 // エラーログを出力
                 Debug.LogError($"状態{stateID}が存在しません。");
-                // Debug.LogError($"State {stateID} does not exist.");
             }
         }
         
@@ -72,7 +70,6 @@ namespace RizeLibrary.StateMachine
             {
                 // エラーログを出力
                 Debug.LogError("初期状態が設定されていません。");
-                // Debug.LogError("Initial state is not set.");
             }
             else
             {
@@ -102,7 +99,6 @@ namespace RizeLibrary.StateMachine
             {
                 // エラーログを出力
                 Debug.LogError($"状態{stateID}が存在しません。");
-                // Debug.LogError($"State {stateID} does not exist.");
             }
         }
 
@@ -121,7 +117,6 @@ namespace RizeLibrary.StateMachine
             }
 
             Debug.LogError($"いずれかの状態が存在しないため、{fromStateID}から{toStateID}への遷移を追加できません。");
-            // Debug.LogError($"Transition from {fromStateID} to {toStateID} cannot be added because one of the states does not exist.");
             return null;
         }
         
@@ -191,6 +186,11 @@ namespace RizeLibrary.StateMachine
         public override void OnDrawDebug()
         {
             _currentState?.OnDrawDebug();
+        }
+        
+        public override void OnDestroy()
+        {
+            _currentState?.OnDestroy();
         }
     }
 }
