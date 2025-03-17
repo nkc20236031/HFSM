@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace RizeLibrary.StateMachine
 {
@@ -8,13 +8,11 @@ namespace RizeLibrary.StateMachine
 		
 		public TStateID FromStateID { get; }
 		public TStateID ToStateID { get; }
-		public TransitionSettings Settings { get; }
 
-		public Transition(TStateID fromStateID, TStateID toStateID, TransitionSettings settings = null)
+		public Transition(TStateID fromStateID, TStateID toStateID)
 		{
 			FromStateID = fromStateID;
 			ToStateID = toStateID;
-			Settings = settings ?? new TransitionSettings();
 		}
 		
 		/// <summary>
@@ -43,13 +41,6 @@ namespace RizeLibrary.StateMachine
 
 	public class AnyTransition<TStateID> : Transition<TStateID>
 	{
-		public AnyTransition(TStateID toStateID, TransitionSettings settings = null) : base(default, toStateID, settings) { }
-	}
-
-	[System.Serializable]
-	public class TransitionSettings
-	{
-		public bool HasExitTime = true;
-		public float ExitTime = 0.75f;
+		public AnyTransition(TStateID toStateID) : base(default, toStateID) { }
 	}
 }
