@@ -10,7 +10,8 @@ namespace RizeLibrary.StateMachine
         private readonly List<Transition<TStateID>> _transitions = new();
         private readonly List<Transition<TStateID>> _anyTransitions = new();
         private List<Transition<TStateID>> _selectTransitions = new();
-        private BaseAction _currentState;
+        
+        public BaseAction CurrentState { get; private set; }
 
         /// <summary>
         /// 状態の追加
@@ -42,8 +43,13 @@ namespace RizeLibrary.StateMachine
             if (_states.ContainsKey(stateID))
             {
                 // 現在の状態を設定
-                _currentState = _states[stateID];
+                CurrentState = _states[stateID];
                 UpdateAnyTransitions();
+                // Conditionの初期化
+                foreach (var transition in _selectTransitions)
+                {
+                    transition.ConditionInitialize();
+                }
             }
             else
             {
@@ -57,7 +63,7 @@ namespace RizeLibrary.StateMachine
         /// </summary>
         private void UpdateAnyTransitions()
         {
-            _selectTransitions = _transitions.Where(transition => _currentState == _states[transition.FromStateID]).ToList();
+            _selectTransitions = _transitions.Where(transition => CurrentState == _states[transition.FromStateID]).ToList();
         }
 
         /// <summary>
@@ -66,7 +72,7 @@ namespace RizeLibrary.StateMachine
         public void Init()
         {
             // 初期状態が設定されていない場合
-            if (_currentState == null)
+            if (CurrentState == null)
             {
                 // エラーログを出力
                 Debug.LogError("初期状態が設定されていません。");
@@ -74,7 +80,7 @@ namespace RizeLibrary.StateMachine
             else
             {
                 // 現在の状態に遷移
-                _currentState.OnEnter();
+                CurrentState?.OnEnter();
             }
         }
 
@@ -85,15 +91,15 @@ namespace RizeLibrary.StateMachine
         public void ChangeState(TStateID stateID)
         {
             // 指定した状態が存在する場合
-            if (_states.ContainsKey(stateID))
+            if (_states.TryGetValue(stateID, out BaseAction state))
             {
                 // 現在の状態と異なる場合
-                if (_currentState == _states[stateID]) { return; }
+                if (CurrentState == state) { return; }
 
                 // 現在の状態を変更
-                _currentState?.OnExit();
+                CurrentState?.OnExit();
                 SetInitState(stateID);
-                _currentState?.OnEnter();
+                CurrentState?.OnEnter();
             }
             else
             {
@@ -138,12 +144,12 @@ namespace RizeLibrary.StateMachine
 
         public override void OnEnter()
         {
-            _currentState?.OnEnter();
+            CurrentState?.OnEnter();
         }
 
         public override void OnExit()
         {
-            _currentState?.OnExit();
+            CurrentState?.OnExit();
         }
 
         public override void OnUpdate()
@@ -175,22 +181,22 @@ namespace RizeLibrary.StateMachine
                 }
             }
 
-            _currentState?.OnUpdate();
+            CurrentState?.OnUpdate();
         }
 
         public override void OnFixedUpdate()
         {
-            _currentState?.OnFixedUpdate();
+            CurrentState?.OnFixedUpdate();
         }
 
         public override void OnDrawDebug()
         {
-            _currentState?.OnDrawDebug();
+            CurrentState?.OnDrawDebug();
         }
         
         public override void OnDestroy()
         {
-            _currentState?.OnDestroy();
+            CurrentState?.OnDestroy();
         }
     }
 }
