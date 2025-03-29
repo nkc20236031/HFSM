@@ -10,6 +10,11 @@ namespace RizeLibrary.StateMachine
 		{
 			_condition = condition;
 		}
+
+  		/// <summary>
+		/// 初期化を行う
+		/// </summary>
+		public void Initialize();
 		
 		/// <summary>
 		/// 判定を行う
