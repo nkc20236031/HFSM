@@ -26,6 +26,18 @@ namespace RizeLibrary.StateMachine
 		}
 		
 		/// <summary>
+		/// 遷移条件の初期化
+		/// </summary>
+		public void ConditionInitialize()
+		{
+			foreach (KeyValuePair<ICondition, bool> condition in _conditions)
+			{
+				// 条件の初期化
+				condition.Key.Initialize();
+			}
+		}
+		
+		/// <summary>
 		/// すべての条件を満たしているか
 		/// </summary>
 		public bool IsTriggered()
