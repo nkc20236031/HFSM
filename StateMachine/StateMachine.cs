@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,11 +8,14 @@ namespace RizeLibrary.StateMachine
     public class StateMachine<TStateID> : BaseAction
     {
         private readonly Dictionary<TStateID, BaseAction> _states = new();
+        private readonly Dictionary<TStateID, Action> _subStates = new();
         private readonly List<Transition<TStateID>> _transitions = new();
         private readonly List<Transition<TStateID>> _anyTransitions = new();
         private List<Transition<TStateID>> _selectTransitions = new();
         
         public BaseAction CurrentState { get; private set; }
+        public TStateID DefaultStateID { get; private set; }
+        public TStateID CurrentStateID { get; private set; }
 
         /// <summary>
         /// 状態の追加
@@ -34,28 +38,45 @@ namespace RizeLibrary.StateMachine
         }
 
         /// <summary>
+        /// サブステートの追加
+        /// </summary>
+        /// <param name="stateID">状態ID</param>
+        /// <param name="stateMachine">サブステートマシン</param>
+        public void AddState<TSubStateID>(TStateID stateID, StateMachine<TSubStateID> stateMachine)
+        {
+            // すでに同じ状態が存在する場合
+            if (_states.ContainsKey(stateID))
+            {
+                // エラーログを出力
+                Debug.LogError($"状態{stateID}は既に存在します。");
+            }
+            else
+            {
+                // 状態を追加
+                _states.Add(stateID, stateMachine);
+                // サブステートを追加
+                _subStates.Add(stateID, stateMachine.Initialize);
+            }
+        }
+
+        /// <summary>
         /// 初期状態の設定
         /// </summary>
         /// <param name="stateID">状態ID</param>
         public void SetInitState(TStateID stateID)
         {
-            // 指定した状態が存在する場合
             if (_states.ContainsKey(stateID))
             {
-                // 現在の状態を設定
-                CurrentState = _states[stateID];
-                UpdateAnyTransitions();
-                // Conditionの初期化
-                foreach (var transition in _selectTransitions)
-                {
-                    transition.ConditionInitialize();
-                }
+                // 初期状態を設定
+                DefaultStateID = stateID;
             }
             else
             {
                 // エラーログを出力
-                Debug.LogError($"状態{stateID}が存在しません。");
+                Debug.LogError($"初期状態{stateID}が存在しません。");
             }
+            
+            SetChangeState(stateID);
         }
         
         /// <summary>
@@ -69,18 +90,20 @@ namespace RizeLibrary.StateMachine
         /// <summary>
         /// 初期化
         /// </summary>
-        public void Init()
+        public void Initialize()
         {
-            // 初期状態が設定されていない場合
-            if (CurrentState == null)
+            // 初期状態が設定されている場合
+            if (DefaultStateID != null)
             {
-                // エラーログを出力
-                Debug.LogError("初期状態が設定されていません。");
+                // 初期状態を設定
+                CurrentState?.OnExit();
+                CurrentState = _states[DefaultStateID];
+                CurrentState?.OnEnter();
             }
             else
             {
-                // 現在の状態に遷移
-                CurrentState?.OnEnter();
+                // エラーログを出力
+                Debug.LogError("初期状態が設定されていません。");
             }
         }
 
@@ -93,13 +116,39 @@ namespace RizeLibrary.StateMachine
             // 指定した状態が存在する場合
             if (_states.TryGetValue(stateID, out BaseAction state))
             {
-                // 現在の状態と異なる場合
+                // 現在の状態同じ場合
                 if (CurrentState == state) { return; }
 
                 // 現在の状態を変更
                 CurrentState?.OnExit();
-                SetInitState(stateID);
+                SetChangeState(stateID);
                 CurrentState?.OnEnter();
+            }
+            else
+            {
+                // エラーログを出力
+                Debug.LogError($"状態{stateID}が存在しません。");
+            }
+        }
+        
+        /// <summary>
+        /// 状態の変更
+        /// </summary>
+        /// <param name="stateID">状態ID</param>
+        private void SetChangeState(TStateID stateID)
+        {
+            // 指定した状態が存在する場合
+            if (_states.ContainsKey(stateID))
+            {
+                // 現在の状態を設定
+                CurrentStateID = stateID;
+                CurrentState = _states[stateID];
+                UpdateAnyTransitions();
+                // Conditionの初期化
+                foreach (var transition in _selectTransitions)
+                {
+                    transition.ConditionInitialize();
+                }
             }
             else
             {
@@ -154,7 +203,15 @@ namespace RizeLibrary.StateMachine
 
         public override void OnUpdate()
         {
+            // 現在の状態の更新処理
+            CurrentState?.OnUpdate();
+            
             // トリガーされた遷移がある場合
+            CheckTransitions();
+        }
+
+        private void CheckTransitions()
+        {
             if (_selectTransitions.Count > 0)
             {
                 foreach (var transition in _selectTransitions)
@@ -180,8 +237,6 @@ namespace RizeLibrary.StateMachine
                     }
                 }
             }
-
-            CurrentState?.OnUpdate();
         }
 
         public override void OnFixedUpdate()
