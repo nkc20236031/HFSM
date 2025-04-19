@@ -26,7 +26,7 @@ namespace RizeLibrary.StateMachine
 		}
 		
 		/// <summary>
-		/// 遷移条件の初期化
+		/// 条件の初期化
 		/// </summary>
 		public void ConditionInitialize()
 		{
