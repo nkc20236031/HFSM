@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace RizeLibrary.StateMachine
 {
@@ -10,11 +10,11 @@ namespace RizeLibrary.StateMachine
 		{
 			_condition = condition;
 		}
-
-  		/// <summary>
-		/// 初期化を行う
+		
+		/// <summary>
+		/// ステートマシンが実行されたときに呼び出される初期化処理
 		/// </summary>
-		public void Initialize() { }
+		public virtual void Initialize() { }
 		
 		/// <summary>
 		/// 判定を行う
