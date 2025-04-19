@@ -79,7 +79,7 @@ stateMachine.SetInitState("A-State");
 ```cs
 private void Start()
 {
-    stateMachine.Init();
+    stateMachine.Initialize();
 }
 
 private void FixedUpdate()
