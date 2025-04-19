@@ -113,7 +113,7 @@ namespace RizeLibrary.StateMachine
 			_stateMachine.SetInitState(PlayerState.Move);
 			
 			// 初期化
-			_stateMachine.Init();
+			_stateMachine.Initialize();
 		}
 		
 		private void Update()
